@@ -1,0 +1,59 @@
+version: "3.8"
+    
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    command: '--default-authentication-plugin=mysql_native_password'
+    networks:
+      - mynet  
+
+  wordpressics:
+    image: wordpress:latest
+    container_name: wordpressics
+    volumes:
+      - ./data/html:/var/www/html
+      - ./apache/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./apache/ports.conf:/etc/apache2/ports.conf
+    restart: always
+    expose:
+      - 8082
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', 'http://localhost:8080/');
+        define('WP_SITEURL', 'http://localhost:8080/');
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      - mynet
+
+  nginx:
+      container_name: nginx
+      image: nginx:latest
+      restart: always
+      volumes:
+        - ./nginx:/etc/nginx/conf.d
+        - ./nginx/fastcgi_params:/etc/nginx/fastcgi_params
+        - ./data/html:/var/www/html
+      ports:
+        - 8080:80
+      links:
+        - wordpressics
+      networks:
+        - mynet
+
+networks:
+    mynet:

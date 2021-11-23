@@ -1,10 +1,13 @@
 version: "3.8"
     
 services:
-  db:
-    image: mysql:5.7
+  azure_mysql:
+    build: 
+      context: .
+      dockerfile: Dockerfile.sql
+    container_name: azure_mysql
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - data-sql:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: wordpress
@@ -15,45 +18,57 @@ services:
     networks:
       - mynet  
 
-  wordpressics:
-    image: wordpress:latest
-    container_name: wordpressics
+  azure_wordpress:
+    build: 
+      context: .
+      dockerfile: Dockerfile.wordpress
+    container_name: azure_wordpress
     volumes:
-      - ./data/html:/var/www/html
-      - ./apache/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
-      - ./apache/ports.conf:/etc/apache2/ports.conf
+      - data-html:/var/www/html
     restart: always
     expose:
       - 8082
     environment:
-      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_HOST: azure_mysql:3306
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_HOME', 'http://localhost:8080/');
-        define('WP_SITEURL', 'http://localhost:8080/');
+        define('WP_HOME', 'http://localhost/servicewordpressics');
+        define('WP_SITEURL', 'http://localhost/servicewordpressics');
+        $$_SERVER['REQUEST_URI'] = str_replace("/wp-admin/", "/servicewordpressics/wp-admin/",  $$_SERVER['REQUEST_URI']);
     links:
-      - db
+      - azure_mysql
     depends_on:
-      - db
+      - azure_mysql
     networks:
       - mynet
 
-  nginx:
-      container_name: nginx
-      image: nginx:latest
+  azure_nginx:
+      build: 
+        context: .
+        dockerfile: Dockerfile.nginx
+      container_name: azure_nginx
       restart: always
       volumes:
-        - ./nginx:/etc/nginx/conf.d
-        - ./nginx/fastcgi_params:/etc/nginx/fastcgi_params
-        - ./data/html:/var/www/html
+        - data-html:/var/www/html/servicewordpressics
       ports:
-        - 8080:80
+        - 80:80
       links:
-        - wordpressics
+        - azure_wordpress
+      depends_on:
+        - azure_wordpress
       networks:
         - mynet
 
 networks:
     mynet:
+
+volumes:
+    data-sql:
+    data-html:
+
+        # define('WP_HOME', 'http://localhost/servicewordpressics');
+        # define('WP_SITEURL', 'http://localhost/servicewordpressics');
+# $$_SERVER['REQUEST_URI'] = '/servicewordpressics' . $$_SERVER['REQUEST_URI'];
+# $$_SERVER['REQUEST_URI'] = str_replace("/wp-admin/", "/servicewordpressics/wp-admin/",  $$_SERVER['REQUEST_URI']);

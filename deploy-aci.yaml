@@ -1,0 +1,37 @@
+apiVersion: 2019-12-01
+location: 'West Europe'
+name: myContainerGroup
+imageRegistryCredentials:
+  - server: imageRegistryLoginServer
+    username: imageRegistryUsername
+    password: imageRegistryPassword
+properties:
+  containers:
+    - name: asi-sql
+      properties:
+        image: mcoutocontainerregistry.azurecr.io/azure_mysql:latest
+        resources:
+          requests:
+            cpu: 1
+            memoryInGb: 1.5
+    - name: asi-wordpress
+      properties:
+        image: mcoutocontainerregistry.azurecr.io/azure_wordpress:latest
+        resources:
+          requests:
+            cpu: 1
+            memoryInGb: 1.5
+        ports:
+          - port: 80
+          - port: 8080
+
+  osType: Linux
+  ipAddress:
+    type: Public
+    ports:
+      - protocol: tcp
+        port: 80
+      - protocol: tcp
+        port: 8080
+tags: { exampleTag: ics-azure }
+type: Microsoft.ContainerInstance/containerGroups

@@ -57,7 +57,7 @@ az webapp config appsettings set --resource-group mCoutoResourcesGroup --name mC
 - Actualizar configuración compose
 
 ```
-az webapp config container set --resource-group myResourceGroup --name <app-name> --multicontainer-config-type compose --multicontainer-config-file docker-compose-deploy.yml
+az webapp config container set --resource-group mCoutoResourcesGroup --name mCoutoApp --multicontainer-config-type compose --multicontainer-config-file docker-compose-deploy.yaml
 ```
 
 ![AppCreate](images/update_configuration_compose.png)
@@ -114,36 +114,3 @@ docker-compose push
 ![AzureContainerRegistry](images/images_registry.png)
 
 ![AzureContainerRegistry](images/image_push.png)
-
-- Create Azure context
-
-```
-docker context create aci myacicontext
-```
-
-- Deploy application to Azure Container Instances
-
-```
-docker context use myacicontext
-docker compose up
-docker logs azurevotingappredis_azure-vote-front
-docker compose down
-```
-
-- Usar un deploy file .yaml
-
-```
-az container create --resource-group mCoutoContainerRegistry --file deploy-aci.yaml
-```
-
-- View doploy state
-
-```
-az container show --resource-group myResourceGroup --name myContainerGroup --output table
-```
-
-- View container logs
-
-```
-az container logs --resource-group myResourceGroup --name myContainerGroup --container-name aci-tutorial-app
-```

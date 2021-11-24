@@ -2,6 +2,6 @@
 FROM wordpress:latest
 
 
-COPY ./apache/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+# COPY ./apache/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
-COPY ./apache/ports.conf /etc/apache2/ports.conf
+# COPY ./apache/ports.conf /etc/apache2/ports.conf

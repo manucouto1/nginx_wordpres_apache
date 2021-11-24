@@ -23,8 +23,8 @@ services:
       context: .
       dockerfile: Dockerfile.wordpress
     container_name: azure_wordpress
-    volumes:
-      - data-html:/var/www/html
+    # volumes:
+    #   - data-html:/var/www/html
     restart: always
     expose:
       - 8082
@@ -34,9 +34,8 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_HOME', 'http://localhost/servicewordpressics');
-        define('WP_SITEURL', 'http://localhost/servicewordpressics');
-        $$_SERVER['REQUEST_URI'] = str_replace("/wp-admin/", "/servicewordpressics/wp-admin/",  $$_SERVER['REQUEST_URI']);
+        define('WP_HOME', '/servicewordpressics');
+        define('WP_SITEURL', '/servicewordpressics');
     links:
       - azure_mysql
     depends_on:
@@ -50,8 +49,8 @@ services:
         dockerfile: Dockerfile.nginx
       container_name: azure_nginx
       restart: always
-      volumes:
-        - data-html:/var/www/html/servicewordpressics
+      # volumes:
+      #   - data-html:/var/www/html/servicewordpressics
       ports:
         - 80:80
       links:
@@ -66,7 +65,7 @@ networks:
 
 volumes:
     data-sql:
-    data-html:
+    # data-html:
 
         # define('WP_HOME', 'http://localhost/servicewordpressics');
         # define('WP_SITEURL', 'http://localhost/servicewordpressics');

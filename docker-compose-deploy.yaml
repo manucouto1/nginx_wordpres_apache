@@ -5,8 +5,8 @@ services:
     image: mcoutocontainerregistry.azurecr.io/azure_mysql
     container_name: azure_mysql
     volumes:
-      - data-mysql:/var/lib/mysql
-      # - ${WEBAPP_STORAGE_HOME}/mysql:/var/lib/mysql
+      # - data-mysql:/var/lib/mysql
+      - ${WEBAPP_STORAGE_HOME}/mysql:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: wordpress
@@ -14,15 +14,15 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
     command: '--default-authentication-plugin=mysql_native_password'
-    networks:
-      - mynet  
+    # networks:
+    #   - mynet  
 
   azure_wordpress:
     image: mcoutocontainerregistry.azurecr.io/azure_wordpress
     container_name: azure_wordpress
     volumes:
-      - data-html:/var/www/html
-      # - ${WEBAPP_STORAGE_HOME}/site/wwwroot:/var/www/html
+      # - data-html:/var/www/html
+      # - ${WEBAPP_STORAGE_HOME}/html:/var/www/html
       # - ${WEBAPP_STORAGE_HOME}/LogFiles/php:/var/log/php
     restart: always
     expose:
@@ -33,9 +33,9 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_HOME', 'http://mcoutoapp.azurewebsites.net/servicewordpressics');
-        define('WP_SITEURL', 'http://mcoutoapp.azurewebsites.net/servicewordpressics');
-        $$_SERVER['REQUEST_URI'] = str_replace("/wp-admin/", "/servicewordpressics/wp-admin/",  $$_SERVER['REQUEST_URI']);
+        define('WP_HOME', '/servicewordpressics');
+        define('WP_SITEURL', '/servicewordpressics');
+        $_SERVER['REQUEST_URI'] = str_replace("/wp-admin/", "/servicewordpressics/wp-admin/",  $_SERVER['REQUEST_URI']);
     links:
       - azure_mysql
     depends_on:
@@ -48,8 +48,8 @@ services:
       container_name: azure_nginx
       restart: always
       volumes:
-        - data-html:/var/www/html/servicewordpressics
-        # - ${WEBAPP_STORAGE_HOME}/site/wwwroot:/var/www/html/servicewordpressics
+        # - data-html:/var/www/html/servicewordpressics
+        # - ${WEBAPP_STORAGE_HOME}/html:/var/www/html/servicewordpressics
         # - ${WEBAPP_STORAGE_HOME}/LogFiles/nginx:/var/log/nginx
       ports:
         - 80:80
@@ -57,15 +57,15 @@ services:
         - azure_wordpress
       depends_on:
         - azure_wordpress
-      networks:
-        - mynet
+#       networks:
+#         - mynet
 
-networks:
-    mynet:
+# networks:
+#     mynet:
 
-volumes:
-  data-mysql:
-  data-html:
+# volumes:
+#   data-mysql:
+  # data-html:
 
 
         # define('WP_HOME', 'http://localhost/servicewordpressics');

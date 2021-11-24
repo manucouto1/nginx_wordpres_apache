@@ -1,0 +1,13 @@
+*
+# .env
+# .git
+# docker-compose.yml
+# .dockerignore
+# nginx-conf
+# wordpress
+# data
+# data/**/*
+!./apache/000-default.conf
+!./apache/ports.conf
+!./nginx
+!./nginx/fastcgi_params
